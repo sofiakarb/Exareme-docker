@@ -69,8 +69,15 @@ RUN apk add --update curl ca-certificates && \
     rm -rf /tmp/* /var/cache/apk/*
 
 # Runtime dependencies for Exareme
-RUN apk add --update bash jq python py-requests py-numpy lapack py-numpy-f2py && \
+RUN apk add --update curl openssh bash jq python py-requests py-numpy lapack py-numpy-f2py && \
     rm -rf /tmp/* /var/cache/apk/*
+ADD files/service /bin/service
+
+#make sure we get fresh keys
+RUN rm -rf /etc/ssh/ssh_host_rsa_key /etc/ssh/ssh_host_dsa_key
+
+# Make sure a SSH server is running in the container.
+CMD ["/usr/sbin/sshd","-D"]
 
 # Add Exareme
 ADD src/exareme/exareme-distribution/target/exareme /root/exareme
@@ -91,9 +98,11 @@ RUN apk add --update py-pip ca-certificates gcc musl-dev python-dev py-numpy-dev
     rm -rf /tmp/* /var/cache/apk/*
 
 EXPOSE 9090
+EXPOSE 22
 
 ENV USER=root
 WORKDIR /root/exareme
+
 ENTRYPOINT /bin/bash bootstrap.sh
 # While debugging
 #ENTRYPOINT /bin/sh
