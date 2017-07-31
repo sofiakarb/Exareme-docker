@@ -68,16 +68,24 @@ RUN apk add --update curl ca-certificates && \
     rm -rf /jre/lib/oblique-fonts && \
     rm -rf /tmp/* /var/cache/apk/*
 
-# Runtime dependencies for Exareme
-RUN apk add --update rsync curl openssh bash jq python py-requests py-numpy lapack py-numpy-f2py && \
+# Some extra python libraries for the mip-algorithms, which needs to be
+# compiled by hand,
+ADD files/requirements.txt /root/requirements.txt
+RUN apk add --update py-pip ca-certificates gcc musl-dev python-dev py-numpy-dev lapack-dev g++ gfortran && \
+    pip install -r /root/requirements.txt && \
+    apk del py-pip ca-certificates gcc musl-dev python-dev py-numpy-dev lapack-dev g++ gfortran && \
     rm -rf /tmp/* /var/cache/apk/*
-ADD files/service /bin/service
 
 #make sure we get fresh keys
 RUN rm -rf /etc/ssh/ssh_host_rsa_key /etc/ssh/ssh_host_dsa_key
 
 # Make sure a SSH server is running in the container.
 CMD ["/usr/sbin/sshd","-D"]
+
+# Runtime dependencies for Exareme
+RUN apk add --update rsync curl openssh bash jq python py-requests py-numpy lapack py-numpy-f2py && \
+    rm -rf /tmp/* /var/cache/apk/*
+ADD files/service /bin/service
 
 # Add Exareme
 ADD src/exareme/exareme-distribution/target/exareme /root/exareme
@@ -89,13 +97,6 @@ ADD src/mip-algorithms /root/mip-algorithms
 # This has to be done after copying in the algorithms and exareme, as some
 # files are placed in folders created by those two steps.
 ADD files/root /root
-
-# Some extra python libraries for the mip-algorithms, which needs to be
-# compiled by hand, 
-RUN apk add --update py-pip ca-certificates gcc musl-dev python-dev py-numpy-dev lapack-dev g++ gfortran && \
-    pip install -r /root/requirements.txt && \
-    apk del py-pip ca-certificates gcc musl-dev python-dev py-numpy-dev lapack-dev g++ gfortran && \
-    rm -rf /tmp/* /var/cache/apk/*
 
 EXPOSE 9090
 EXPOSE 22
