@@ -21,7 +21,12 @@ This project creates a Docker image for running Exareme. It has been developed o
   git clone https://github.com/madgik/mip-algorithms src/mip-algorithms
   ```
 
-4. Building the Docker image
+4. Fix file access rights
+  ```
+  chmod 400 files/root/.ssh/id_rsa
+  ```
+
+5. Building the Docker image
   ```
   docker build -t hbpmip/exareme .
   ```
