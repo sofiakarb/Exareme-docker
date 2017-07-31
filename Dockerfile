@@ -69,7 +69,7 @@ RUN apk add --update curl ca-certificates && \
     rm -rf /tmp/* /var/cache/apk/*
 
 # Runtime dependencies for Exareme
-RUN apk add --update curl openssh bash jq python py-requests py-numpy lapack py-numpy-f2py && \
+RUN apk add --update rsync curl openssh bash jq python py-requests py-numpy lapack py-numpy-f2py && \
     rm -rf /tmp/* /var/cache/apk/*
 ADD files/service /bin/service
 
