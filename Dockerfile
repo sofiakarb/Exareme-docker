@@ -98,6 +98,11 @@ ADD src/mip-algorithms /root/mip-algorithms
 # files are placed in folders created by those two steps.
 ADD files/root /root
 
+#IP
+WORKDIR /root/exareme/bin
+RUN sed -i "s/'{print \$2}'/'{print \$2}' \| grep '10.0'/" exareme-admin.sh
+#
+
 EXPOSE 9090
 EXPOSE 22
 
